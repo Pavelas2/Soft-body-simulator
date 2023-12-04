@@ -8,30 +8,18 @@ class Particle:
     F = np.zeros(2)
     image = None
 
-    def __init__(self, m, r, x: np.ndarray, v: np.ndarray, color='black'):
-        self.x = x
+    def __init__(self, pos: np.array, r, m=1, V=np.zeros(2), color='black'):
+        self.pos = pos
+        self.V = V
         self.r = r
         self.m = m
-        self.v = v
         self.color = color
 
     def move(self):
-        self.v += self.F * DT / self.m
-        self.x += self.v * DT
-        self.F = np.array([0, 0.5])
-
-        if self.x >= window_width:
-            self.x = window_width
-            self.Vx *= -0.9
-        if self.x <= 0:
-            self.x = 0
-            self.Vx *= -0.9
-        if self.y >= window_height:
-            self.y = window_height
-            self.Vy *= -0.9
-        if self.y <= 0:
-            self.y = 0
-            self.Vx *= -0.9
+        print(self.V, self.F)
+        self.V += self.F / self.m
+        self.pos += self.V
+        self.F = np.zeros(2)
 
 
 class Body:
@@ -45,7 +33,6 @@ class Body:
             self.move()
 
     def move(self):
-
         for part in self.parts:
             part.move()
 
@@ -55,20 +42,17 @@ class Body:
         #calculate_force(self.parts)
 
 class Connection:
-    Y_module = 0.01  # Модуль Юнга
+    k = 0.01  # Модуль Юнга
     image = None
 
     def __init__(self, *parts):
         self.parts = parts
-        self.eq_dist = distance(parts[0], parts[1])
+        self.indifferent_dist = np.linalg.norm(self.parts[0].pos - self.parts[1].pos)
 
     def calculate_parts_force(self):
-        d = (distance(self.parts[0], self.parts[1]) - self.eq_dist)
-        if d:
-            F = d * self.Y_module + d/200*(d*Y_module)**2
-            print(self.parts[0].Fx, (self.parts[1].x - self.parts[0].x))
-            self.parts[0].Fx += (self.parts[1].x - self.parts[0].x) / abs(d) * F
-            self.parts[0].Fy += (self.parts[1].y - self.parts[0].y) / abs(d) * F
-            self.parts[1].Fx += (self.parts[0].x - self.parts[1].x) / abs(d) * F
-            self.parts[1].Fy += (self.parts[0].y - self.parts[1].y) / abs(d) * F
-            print(self.parts[0].Fx)
+        r_vector = self.parts[1].pos - self.parts[0].pos
+        d = np.linalg.norm(r_vector)
+        delta_d = d - self.indifferent_dist
+        self.parts[0].F += delta_d * self.k * r_vector/d
+        self.parts[1].F -= delta_d * self.k * r_vector/d
+

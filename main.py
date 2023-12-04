@@ -1,4 +1,7 @@
 import tkinter
+
+import numpy as np
+
 from save import *
 from visual import *
 from physic import *
@@ -9,32 +12,17 @@ simulation_started = True
 
 bodies = []
 
-parts1 = [Particle(300, 300, 5, color="blue", Vx=-0),
-          Particle(400, 300, 5, color="red"),
-          Particle(400, 400, 5, color="yellow"),
-          Particle(300, 400, 5, color="brown"),
-          Particle(350, 350, 5, Vy=0.0)]
+parts = [Particle(np.array([300., 550.]), 5, color="blue", V=np.array([-1., -0.])),
+         Particle(np.array([400., 550.]), 5, color="red"),]
+         #Particle(np.array([350., 450.]), 5),
+        # Particle(np.array([350., 510.]), 5)]
 
-parts = [Particle(300, 550, 5, color="blue", Vx=0),
-         Particle(400, 550, 5, color="red"),
-         Particle(350, 450, 5, Vy=0.0),
-         Particle(350, 510, 5, Vy=-0)]
-
-'''connects1 = [Connection((parts[0], parts[1])),
-            Connection((parts[0], parts[3])),
-            Connection((parts[0], parts[4])),
-            Connection((parts[1], parts[4])),
-            Connection((parts[1], parts[2])),
-            Connection((parts[2], parts[3])),
-            Connection((parts[2], parts[4])),
-            Connection((parts[3], parts[4]))]'''
-
-connects = [Connection(parts[0], parts[1]),
-            Connection(parts[0], parts[2]),
-            Connection(parts[1], parts[2]),
-            Connection(parts[3], parts[0]),
-            Connection(parts[3], parts[1]),
-            Connection(parts[3], parts[2])]
+connects = [Connection((parts[0], parts[1]))]
+            #Connection((parts[0], parts[2])),
+            #Connection((parts[1], parts[2])),
+            #Connection((parts[3], parts[0])),
+            #Connection((parts[3], parts[1])),
+            #Connection((parts[3], parts[2]))]
 
 bodies.append(Body(connects=connects, parts=parts))
 
