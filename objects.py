@@ -2,7 +2,6 @@ from physic import *
 from visual import window_width, window_height
 import numpy as np
 
-DT = 0.1
 
 class Particle:
     F = np.zeros(2)
@@ -15,10 +14,9 @@ class Particle:
         self.m = m
         self.color = color
 
-    def move(self):
-        print(self.V, self.F)
-        self.V += self.F / self.m
-        self.pos += self.V
+    def move(self, dt):
+        self.V += self.F / self.m * dt
+        self.pos += self.V * dt
         self.F = np.zeros(2)
 
 
@@ -27,22 +25,23 @@ class Body:
         self.connects = connects
         self.parts = parts
 
-    def update_pos(self):
-        for i in range(1):
+    def update_pos(self, dt, N):
+        for i in range(N):
             self.update_force()
-            self.move()
-
-    def move(self):
-        for part in self.parts:
-            part.move()
+            for part in self.parts:
+                part.move(dt / N)
 
     def update_force(self):
+        for part in self.parts:
+            part.F = np.array([0., 0.])
         for connect in self.connects:
             connect.calculate_parts_force()
-        #calculate_force(self.parts)
+
 
 class Connection:
-    k = 0.01  # Модуль Юнга
+    k = 0.01
+    k_d = 0.03
+
     image = None
 
     def __init__(self, *parts):
@@ -51,8 +50,14 @@ class Connection:
 
     def calculate_parts_force(self):
         r_vector = self.parts[1].pos - self.parts[0].pos
+        v_vector = self.parts[1].V - self.parts[0].V
         d = np.linalg.norm(r_vector)
         delta_d = d - self.indifferent_dist
-        self.parts[0].F += delta_d * self.k * r_vector/d
-        self.parts[1].F -= delta_d * self.k * r_vector/d
+        self.parts[0].F += (delta_d * self.k + (r_vector / d) @ v_vector * self.k_d) * r_vector / d
+        self.parts[1].F -= (delta_d * self.k + (r_vector / d) @ v_vector * self.k_d) * r_vector / d
 
+
+class Block:
+    image = None
+    def __init__(self, points):
+        self.points = points
