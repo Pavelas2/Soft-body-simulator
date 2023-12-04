@@ -24,6 +24,8 @@ connects = [Connection((parts[0], parts[1])),
             Connection((parts[3], parts[1])),
             Connection((parts[3], parts[2]))]
 
+blocks = [Block([[100, 100], [200, 100], [200, 200]])]
+
 bodies.append(Body(connects=connects, parts=parts))
 
 
@@ -35,7 +37,10 @@ def start_sim():
     start_button["command"] = stop_sim
 
     for body in bodies:
-        create_image(space, body)
+        create_body_image(space, body)
+
+    for block in blocks:
+        create_block_image(space, block)
 
     simulation()
 
@@ -51,7 +56,7 @@ def stop_sim():
 def simulation():
     for body in bodies:
         body.update_pos(DT, 1)
-        update_image(space, body)
+        update_body_image(space, body)
 
     if simulation_started:
         space.after(10, simulation)

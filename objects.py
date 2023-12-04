@@ -37,7 +37,6 @@ class Body:
             connect.calculate_parts_force()
 
 
-
 class Connection:
     k = 0.01
     k_d = 0.03
@@ -55,3 +54,9 @@ class Connection:
         delta_d = d - self.indifferent_dist
         self.parts[0].F += (delta_d * self.k + (r_vector / d) @ v_vector * self.k_d) * r_vector / d
         self.parts[1].F -= (delta_d * self.k + (r_vector / d) @ v_vector * self.k_d) * r_vector / d
+
+
+class Block:
+    image = None
+    def __init__(self, points):
+        self.points = points
