@@ -22,8 +22,6 @@ class Particle:
         self.y += self.Vy
         self.Fx = 0
         self.Fy = 0.5
-        self.Vx *= 0.85
-        self.Vy *= 0.85
 
         if self.x >= 600:
             self.x = 600
@@ -37,9 +35,6 @@ class Particle:
         if self.y <= 0:
             self.y = 0
             self.Vx *= -0.9
-
-    def connect_particles(self, parts):
-        self.conn += parts
 
 
 class Body:
