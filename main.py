@@ -12,17 +12,17 @@ simulation_started = True
 
 bodies = []
 
-parts = [Particle(np.array([300., 550.]), 5, color="blue", V=np.array([-1., -0.])),
-         Particle(np.array([400., 550.]), 5, color="red"),]
-         #Particle(np.array([350., 450.]), 5),
-        # Particle(np.array([350., 510.]), 5)]
+parts = [Particle(np.array([300., 350.]), 5, color="blue", V=np.array([-3., -0.])),
+         Particle(np.array([400., 350.]), 5, color="red", V=np.array([3., -1.])),
+         Particle(np.array([350., 450.]), 5, color="green", V=np.array([0., -3.])),
+         Particle(np.array([350., 510.]), 5)]
 
-connects = [Connection((parts[0], parts[1]))]
-            #Connection((parts[0], parts[2])),
-            #Connection((parts[1], parts[2])),
-            #Connection((parts[3], parts[0])),
-            #Connection((parts[3], parts[1])),
-            #Connection((parts[3], parts[2]))]
+connects = [Connection((parts[0], parts[1])),
+            Connection((parts[0], parts[2])),
+            Connection((parts[1], parts[2])),
+            Connection((parts[3], parts[0])),
+            Connection((parts[3], parts[1])),
+            Connection((parts[3], parts[2]))]
 
 bodies.append(Body(connects=connects, parts=parts))
 
@@ -50,7 +50,7 @@ def stop_sim():
 
 def simulation():
     for body in bodies:
-        body.update_pos()
+        body.update_pos(DT, 1)
         update_image(space, body)
 
     if simulation_started:
