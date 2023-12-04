@@ -1,5 +1,5 @@
 import numpy as np
-
+from visual import  window_height, window_width
 DT = 1
 
 
@@ -38,18 +38,20 @@ def intersection_of_border(point1, point2, point3, point4):
 def collision(part, block):
     n = 0
     for i in range(len(block.points)):
-        if intersection_of_border(part.pos, [0,0], *(block.points + [block.points[0]])[i:i + 2:1]):
+        if intersection_of_border(part.pos, [-1000,-1000], *(block.points + [block.points[0]])[i:i + 2:1]) :
             n += 1
 
+    k = 0
 
+    for i in range(len(block.points)):
+        if intersection_of_border(part.pos, [1000,1000], *(block.points + [block.points[0]])[i:i + 2:1]):
+            k += 1
 
-    if n % 2:
+    if n % 2 and k % 2:
         list_of_perpendicular = []
         for i in range(len(block.points)):
             list_of_perpendicular.append(perpendicular_to_line(part.pos, np.array([*(block.points + [block.points[0]])[i:i + 2:1]])))
-        print(list_of_perpendicular)
         vector = min_by_module(list_of_perpendicular)
-        print(part.pos, vector)
         part.pos += vector
-        print(part.pos)
         part.V -= 2 * (part.V @ vector / (np.linalg.norm(vector) or 1)) * vector / (np.linalg.norm(vector) or 1)
+        part.V *= 0.99

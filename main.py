@@ -12,20 +12,27 @@ simulation_started = True
 
 bodies = []
 
-blocks.append(Block([[-100, window_height-500], [window_width+100, window_height-20], [window_width+100, window_height+50], [-100, window_height+50]]))
+blocks.append(Block([[-100, window_height-20], [window_width+100, window_height-20], [window_width+100, window_height+50], [-100, window_height+50]]))
+blocks.append(Block([[-100, 20], [window_width+100, 20], [window_width+100, -50], [-100, -50]]))
+blocks.append(Block([[window_width-20, -30], [window_width+20, -30],[window_width+20, window_height+30], [window_width-20, window_height+30]] ))
+blocks.append(Block([[-100, -30], [20, -30],[20, 630], [-100, 630]] ))
+blocks.append(Block([[300, 550], [500, 400], [500,550]]))
 
-parts = [Particle(np.array([window_width/2, window_height/2]), 5, color="blue", V=np.array([-0., 1.])),]
-         #Particle(np.array([window_width/2+50, window_height/2]), 5, color="red", V=np.array([0., 0.])),
-         #Particle(np.array([window_width/2+50, window_height/2+50]), 5, color="green", V=np.array([0., 0.])),
-         #Particle(np.array([window_width/2, window_height/2+50]), 5)]
 
-connects = [Connection((parts[0], parts[0]))]
-'''[Connection((parts[0], parts[1])),
-            Connection((parts[0], parts[2])),
+parts = [Particle(np.array([window_width/2, window_height/2]), 5, color="blue", V=np.array([-0., 5.])),
+         Particle(np.array([window_width/2+50, window_height/2]), 5, color="red", V=np.array([0., 0.])),
+         Particle(np.array([window_width/2+50, window_height/2+50]), 5, color="green", V=np.array([0., 0.])),
+         Particle(np.array([window_width/2, window_height/2+50]), 5),
+         Particle(np.array([window_width/2+25, window_height/2+25]), 5)]
+
+connects = [Connection((parts[0], parts[1])),
+            Connection((parts[0], parts[3])),
+            Connection((parts[0], parts[4])),
             Connection((parts[1], parts[2])),
-            Connection((parts[3], parts[0])),
-            Connection((parts[3], parts[1])),
-            Connection((parts[3], parts[2]))]'''
+            Connection((parts[1], parts[4])),
+            Connection((parts[2], parts[3])),
+            Connection((parts[2], parts[4])),
+            Connection((parts[3], parts[4]))]
 
 
 bodies.append(Body(connects=connects, parts=parts))

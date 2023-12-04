@@ -36,14 +36,14 @@ class Body:
 
     def update_force(self):
         for part in self.parts:
-            part.F = np.array([0., 0.0])
+            part.F = np.array([0., 0.1])
         for connect in self.connects:
             connect.calculate_parts_force()
 
 
 class Connection:
-    k = 0.05
-    k_d = 0.04
+    k = 0.09
+    k_d = 0.08
 
     image = None
 
