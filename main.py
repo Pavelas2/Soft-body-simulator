@@ -12,19 +12,21 @@ simulation_started = True
 
 bodies = []
 
-parts = [Particle(np.array([300., 350.]), 5, color="blue", V=np.array([-3., -0.])),
-         Particle(np.array([400., 350.]), 5, color="red", V=np.array([3., -1.])),
-         Particle(np.array([350., 450.]), 5, color="green", V=np.array([0., -3.])),
-         Particle(np.array([350., 510.]), 5)]
+blocks.append(Block([[-100, window_height-500], [window_width+100, window_height-20], [window_width+100, window_height+50], [-100, window_height+50]]))
 
-connects = [Connection((parts[0], parts[1])),
+parts = [Particle(np.array([window_width/2, window_height/2]), 5, color="blue", V=np.array([-0., 1.])),]
+         #Particle(np.array([window_width/2+50, window_height/2]), 5, color="red", V=np.array([0., 0.])),
+         #Particle(np.array([window_width/2+50, window_height/2+50]), 5, color="green", V=np.array([0., 0.])),
+         #Particle(np.array([window_width/2, window_height/2+50]), 5)]
+
+connects = [Connection((parts[0], parts[0]))]
+'''[Connection((parts[0], parts[1])),
             Connection((parts[0], parts[2])),
             Connection((parts[1], parts[2])),
             Connection((parts[3], parts[0])),
             Connection((parts[3], parts[1])),
-            Connection((parts[3], parts[2]))]
+            Connection((parts[3], parts[2]))]'''
 
-blocks = [Block([[100, 100], [200, 100], [200, 200], [100, 200]])]
 
 bodies.append(Body(connects=connects, parts=parts))
 
@@ -42,6 +44,7 @@ def start_sim():
     for block in blocks:
         create_block_image(space, block)
 
+    space.create_oval(-10, -10, 10, 10)
     simulation()
 
 

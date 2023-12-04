@@ -1,6 +1,7 @@
 from physic import *
 from visual import window_width, window_height
 import numpy as np
+from physic import *
 
 
 class Particle:
@@ -30,17 +31,19 @@ class Body:
             self.update_force()
             for part in self.parts:
                 part.move(dt / N)
+                for block in blocks:
+                    collision(part, block)
 
     def update_force(self):
         for part in self.parts:
-            part.F = np.array([0., 0.])
+            part.F = np.array([0., 0.0])
         for connect in self.connects:
             connect.calculate_parts_force()
 
 
 class Connection:
-    k = 0.01
-    k_d = 0.03
+    k = 0.05
+    k_d = 0.04
 
     image = None
 
@@ -49,15 +52,20 @@ class Connection:
         self.eq_dist = np.linalg.norm(self.parts[0].pos - self.parts[1].pos)
 
     def calculate_parts_force(self):
-        r_vector = self.parts[1].pos - self.parts[0].pos
-        v_vector = self.parts[1].V - self.parts[0].V
-        d = np.linalg.norm(r_vector)
-        delta_d = d - self.eq_dist
-        self.parts[0].F += (delta_d * self.k + (r_vector / d) @ v_vector * self.k_d) * r_vector / d
-        self.parts[1].F -= (delta_d * self.k + (r_vector / d) @ v_vector * self.k_d) * r_vector / d
+        if not self.parts[0] == self.parts[1]:
+            r_vector = self.parts[1].pos - self.parts[0].pos
+            v_vector = self.parts[1].V - self.parts[0].V
+            d = np.linalg.norm(r_vector)
+            delta_d = d - self.eq_dist
+            self.parts[0].F += (delta_d * self.k + (r_vector / d) @ v_vector * self.k_d) * r_vector / d
+            self.parts[1].F -= (delta_d * self.k + (r_vector / d) @ v_vector * self.k_d) * r_vector / d
 
 
 class Block:
     image = None
+
     def __init__(self, points):
         self.points = points
+
+
+blocks = []

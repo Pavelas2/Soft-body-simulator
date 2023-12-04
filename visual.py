@@ -25,4 +25,4 @@ def update_body_image(space, body):
 
 
 def create_block_image(space, block):
-    block.image = space.create_polygon(*block.points, fill='black')
+    block.image = space.create_line(*block.points)
