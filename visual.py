@@ -5,7 +5,7 @@ window_height = 600
 def create_body_image(space, body):
     for connect in body.connects:
         if not connect.image:
-            connect.image = space.create_line(*connect.parts[0].pos, *connect.parts[1].pos)
+            connect.image = space.create_line(*connect.parts[0].pos, *connect.parts[1].pos, fill='black')
         for part in connect.parts:
             if not part.image:
                 x = part.pos[0]
@@ -25,4 +25,4 @@ def update_body_image(space, body):
 
 
 def create_block_image(space, block):
-    block.image = space.create_polygon(*block.points)
+    block.image = space.create_polygon(*block.points, fill='black')

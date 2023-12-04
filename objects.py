@@ -44,15 +44,15 @@ class Connection:
 
     image = None
 
-    def __init__(self, *parts):
+    def __init__(self, parts):
         self.parts = parts
-        self.indifferent_dist = np.linalg.norm(self.parts[0].pos - self.parts[1].pos)
+        self.eq_dist = np.linalg.norm(self.parts[0].pos - self.parts[1].pos)
 
     def calculate_parts_force(self):
         r_vector = self.parts[1].pos - self.parts[0].pos
         v_vector = self.parts[1].V - self.parts[0].V
         d = np.linalg.norm(r_vector)
-        delta_d = d - self.indifferent_dist
+        delta_d = d - self.eq_dist
         self.parts[0].F += (delta_d * self.k + (r_vector / d) @ v_vector * self.k_d) * r_vector / d
         self.parts[1].F -= (delta_d * self.k + (r_vector / d) @ v_vector * self.k_d) * r_vector / d
 

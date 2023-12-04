@@ -24,7 +24,7 @@ connects = [Connection((parts[0], parts[1])),
             Connection((parts[3], parts[1])),
             Connection((parts[3], parts[2]))]
 
-blocks = [Block([[100, 100], [200, 100], [200, 200]])]
+blocks = [Block([[100, 100], [200, 100], [200, 200], [100, 200]])]
 
 bodies.append(Body(connects=connects, parts=parts))
 
