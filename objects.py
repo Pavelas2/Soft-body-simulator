@@ -1,36 +1,33 @@
 from physic import *
-import numpy as nm
+from visual import window_width, window_height
+import numpy as np
+
+DT = 0.1
 
 class Particle:
-    Fx = 0
-    Fy = 0
+    F = np.zeros(2)
     image = None
 
-    def __init__(self, x, y, r, m=1, Vx=0, Vy=0, color='black'):
+    def __init__(self, m, r, x: np.ndarray, v: np.ndarray, color='black'):
         self.x = x
-        self.y = y
         self.r = r
         self.m = m
-        self.Vx = Vx
-        self.Vy = Vy
+        self.v = v
         self.color = color
 
     def move(self):
-        self.Vx += self.Fx / self.m
-        self.Vy += self.Fy / self.m
-        self.x += self.Vx
-        self.y += self.Vy
-        self.Fx = 0
-        self.Fy = 0.5
+        self.v += self.F * DT / self.m
+        self.x += self.v * DT
+        self.F = np.array([0, 0.5])
 
-        if self.x >= 600:
-            self.x = 600
+        if self.x >= window_width:
+            self.x = window_width
             self.Vx *= -0.9
         if self.x <= 0:
             self.x = 0
             self.Vx *= -0.9
-        if self.y >= 600:
-            self.y = 600
+        if self.y >= window_height:
+            self.y = window_height
             self.Vy *= -0.9
         if self.y <= 0:
             self.y = 0
@@ -61,12 +58,12 @@ class Connection:
     Y_module = 0.01  # Модуль Юнга
     image = None
 
-    def __init__(self, parts):
+    def __init__(self, *parts):
         self.parts = parts
-        self.indifferent_dist = distance(parts[0], parts[1])
+        self.eq_dist = distance(parts[0], parts[1])
 
     def calculate_parts_force(self):
-        d = (distance(self.parts[0], self.parts[1]) - self.indifferent_dist)
+        d = (distance(self.parts[0], self.parts[1]) - self.eq_dist)
         if d:
             F = d * self.Y_module + d/200*(d*Y_module)**2
             print(self.parts[0].Fx, (self.parts[1].x - self.parts[0].x))

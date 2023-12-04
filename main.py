@@ -29,12 +29,12 @@ parts = [Particle(300, 550, 5, color="blue", Vx=0),
             Connection((parts[2], parts[4])),
             Connection((parts[3], parts[4]))]'''
 
-connects = [Connection((parts[0], parts[1])),
-            Connection((parts[0], parts[2])),
-            Connection((parts[1], parts[2])),
-            Connection((parts[3], parts[0])),
-            Connection((parts[3], parts[1])),
-            Connection((parts[3], parts[2]))]
+connects = [Connection(parts[0], parts[1]),
+            Connection(parts[0], parts[2]),
+            Connection(parts[1], parts[2]),
+            Connection(parts[3], parts[0]),
+            Connection(parts[3], parts[1]),
+            Connection(parts[3], parts[2])]
 
 bodies.append(Body(connects=connects, parts=parts))
 
