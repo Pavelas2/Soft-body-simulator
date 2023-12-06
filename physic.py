@@ -53,5 +53,7 @@ def collision(part, block):
             list_of_perpendicular.append(perpendicular_to_line(part.pos, np.array([*(block.points + [block.points[0]])[i:i + 2:1]])))
         vector = min_by_module(list_of_perpendicular)
         part.pos += vector
-        part.V -= 2 * (part.V @ vector / (np.linalg.norm(vector) or 1)) * vector / (np.linalg.norm(vector) or 1)
-        part.V *= 0.99
+        n = -(part.V @ vector / (np.linalg.norm(vector) or 1)) * vector / (np.linalg.norm(vector) or 1)
+        parallel_v = part.V + n
+        part.V = n + parallel_v*0.95
+        #part.V *= 0.99
