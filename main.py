@@ -74,7 +74,7 @@ def stop_sim():
 
 def simulation():
     for body in bodies:
-        body.update_pos(DT, 2)
+        body.update_pos(DT, 1)
         update_body_image(space, body)
 
     move_captured_part()
@@ -82,7 +82,7 @@ def simulation():
     check_selection()
 
     if simulation_started:
-        space.after(10, simulation)
+        space.after(15, simulation)
 
 def save_data():
     for body in bodies:
@@ -92,10 +92,11 @@ def reset():
     global bodies
     stop_sim()
     delete(space, bodies[0])
-    for body in bodies:
-        parts, connects = load_body_data('Body1')
-        body.parts = parts
-        body.connects = connects
+
+    for i in range(len(bodies)):
+        parts, connects = load_body_data(f'Body {i+1}')
+        bodies[i].parts = parts
+        bodies[i].connects = connects
     space.after(10, start_sim)
 
 def mousedown(event):
@@ -113,7 +114,7 @@ def mousedown(event):
                         break
     elif add_part.get() and body_listbox.curselection():
         body = bodies[body_listbox.curselection()[0]]
-        new_part = Particle(np.array([event.x, event.y], dtype=float), 5)
+        new_part = Particle(body.parts[-1].number+1, np.array([event.x, event.y], dtype=float), 5)
         create_part_image(space, new_part)
         body.parts.append(new_part)
 
@@ -163,11 +164,12 @@ def main():
     global add_part_button
     global add_part
 
-    parts, connects = load_body_data('Body1')
+    parts, connects = load_body_data('Body 1')
     bodies.append(Body(connects=connects, parts=parts))
 
     root = tkinter.Tk()
     root.title("Soft-body")
+
     # пространство отображается на холсте типа Canvas
     space = tkinter.Canvas(root, width=window_width, height=window_height, bg="white")
     space.bind('<Button-1>', mousedown)
@@ -189,10 +191,10 @@ def main():
     start_button.grid(row=3)
 
     save_button = tkinter.Button(frame, text="Save", command=save_data)
-    save_button.pack()
+    save_button.grid(row=3, column=1)
 
     reset_button = tkinter.Button(frame, text="Reset", command=reset)
-    reset_button.pack()
+    reset_button.grid(row=4, column=1)
     # start_button.bind('<Button-1>', start_sim)
     # start_button.pack(side=tkinter.RIGHT)
 
