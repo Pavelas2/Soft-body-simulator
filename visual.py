@@ -1,7 +1,6 @@
 window_width = 600
 window_height = 600
 
-
 def create_body_image(space, body):
     for connect in body.connects:
         if not connect.image:

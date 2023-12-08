@@ -10,12 +10,13 @@ class Particle:
     F = np.zeros(2)
     image = None
 
-    def __init__(self, pos: np.array, r, m=1, V=np.zeros(2), color='black'):
+    def __init__(self, pos: np.ndarray, r, m=1, V=np.zeros(2), color='black'):
         self.pos = pos
         self.V = V
         self.r = r
         self.m = m
         self.color = color
+        self.captured = False
 
     def move(self, dt):
         self.V += self.F / self.m * dt
@@ -75,8 +76,8 @@ class Body:
 
 
 class Connection:
-    k = 0.09
-    k_d = 0.15
+    k = 0.4
+    k_d = 0.3
 
     image = None
 
@@ -99,6 +100,24 @@ class Block:
 
     def __init__(self, points):
         self.points = points
+
+class Cursor:
+    def __init__(self, pos: np.ndarray):
+        #self.last_tick = t
+        self.pos = pos
+        self.prev_pos = pos
+        self.v = np.zeros(2)
+        self.v_prev = self.v
+        self.a = np.zeros(2)
+
+    def update(self, pos):
+        #dt = t - self.last_tick
+        #self.last_tick = t
+        self.prev_pos = self.pos
+        self.pos = pos
+        self.v_prev = self.v
+        self.v = (self.pos - self.prev_pos)/DT
+        self.a = (self.v - self.v_prev)/DT
 
 
 blocks = []

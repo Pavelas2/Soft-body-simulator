@@ -1,9 +1,10 @@
 import numpy as np
+import time
 
 DT = 1
 
 
-def perpendicular_to_line(point: np.array, line: np.array):  # line shape = (2, 2), two points
+def perpendicular_to_line(point: np.ndarray, line: np.ndarray):  # line shape = (2, 2), two points
     n = (line[1] - line[0]) / np.linalg.norm((line[1] - line[0]))
     perpendicular = line[0] - point - ((line[0] - point) @ n) * n
     return perpendicular
@@ -58,3 +59,10 @@ def collision(part, block):
         n = -(part.V @ vector / (np.linalg.norm(vector) or 1)) * vector / (np.linalg.norm(vector) or 1)
         parallel_v = part.V + n
         part.V = n*0.1 + parallel_v * 0.95
+
+def calculate_fict_force(part, a):
+    part.F = part.m * a
+
+def translate(body, vector: np.ndarray):
+    for part in body.parts:
+        part.pos += vector
