@@ -1,9 +1,6 @@
 import math
 
 from physic import *
-from visual import window_width, window_height
-import numpy as np
-from physic import *
 
 
 class Particle:
@@ -52,13 +49,16 @@ class Particle:
                 self.V = np.array([V1x, V1y])
                 part.V = np.array([V2x, V2y])
 
-            if np.linalg.norm(r_vector) <= 50:
-                F = 2.5 * r_vector / (np.linalg.norm(r_vector) ** 4)
+            if np.linalg.norm(r_vector) <= 30:
+                F = 1 * r_vector / ((np.linalg.norm(r_vector)/3) ** 3)
                 self.F -= F
 
 
 class Body:
-    def __init__(self, connects=[], parts=[]):
+    chosen = False
+
+    def __init__(self, name="body", connects=[], parts=[]):
+        self.name = name
         self.connects = connects
         self.parts = parts
 
@@ -66,15 +66,17 @@ class Body:
         for i in range(N):
             self.update_force()
             for part in self.parts:
+                print("1:", part, part.V)
                 part.self_collision(self.parts)
                 part.move(dt / N)
+                print("2:", part, part.V)
                 for block in blocks:
                     collision(part, block)
                 part.F = np.zeros(2)
 
     def update_force(self):
         for part in self.parts:
-            part.F += np.array([0., 0.2])
+            part.F += np.array([0., 0.0])
         for connect in self.connects:
             connect.calculate_parts_force()
 

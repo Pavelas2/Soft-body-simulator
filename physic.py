@@ -1,5 +1,4 @@
 import numpy as np
-import time
 
 DT = 1
 
@@ -58,7 +57,7 @@ def collision(part, block):
         part.pos += vector
         n = -(part.V @ vector / (np.linalg.norm(vector) or 1)) * vector / (np.linalg.norm(vector) or 1)
         parallel_v = part.V + n
-        part.V = n + parallel_v * 0.95
+        part.V = n*0.8 + parallel_v * 0.95
 
 def calculate_fict_force(part, a):
     part.F = part.m * a
