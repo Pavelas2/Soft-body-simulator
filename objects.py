@@ -49,8 +49,8 @@ class Particle:
                 part.V = np.array([V2x, V2y])
 
             F = 0.8 * r_vector/(np.linalg.norm(r_vector)**2)
-            self.F -= F
-            part.F += F
+            #self.F -= F
+            #part.F += F
 
 
 
@@ -67,16 +67,17 @@ class Body:
                 part.self_collision(self.parts)
                 for block in blocks:
                     collision(part, block)
+                part.F = np.zeros(2)
 
     def update_force(self):
         for part in self.parts:
-            part.F = np.array([0., 0.2])
+            part.F += np.array([0., 0.2])
         for connect in self.connects:
             connect.calculate_parts_force()
 
 
 class Connection:
-    k = 0.4
+    k = 0.3
     k_d = 0.3
 
     image = None
@@ -101,23 +102,6 @@ class Block:
     def __init__(self, points):
         self.points = points
 
-class Cursor:
-    def __init__(self, pos: np.ndarray):
-        #self.last_tick = t
-        self.pos = pos
-        self.prev_pos = pos
-        self.v = np.zeros(2)
-        self.v_prev = self.v
-        self.a = np.zeros(2)
-
-    def update(self, pos):
-        #dt = t - self.last_tick
-        #self.last_tick = t
-        self.prev_pos = self.pos
-        self.pos = pos
-        self.v_prev = self.v
-        self.v = (self.pos - self.prev_pos)/DT
-        self.a = (self.v - self.v_prev)/DT
 
 
 blocks = []
