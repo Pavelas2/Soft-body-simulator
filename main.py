@@ -27,6 +27,7 @@ blocks.append(Block([[-100, -30], [20, -30], [20, 630], [-100, 630]]))
 blocks.append(Block([[300, 600], [500, 400], [500, 600]]))
 blocks.append(Block([[0, 300], [0, 280], [300, 280], [300, 300]]))
 
+
 """
 parts = [Particle(0, np.array([window_width / 2, window_height / 2]), 5, color="blue", V=np.array([-0., 5.])),
          Particle(1, np.array([window_width / 2 + 50, window_height / 2]), 5, color="red", V=np.array([0., 0.])),
