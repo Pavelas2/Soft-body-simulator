@@ -22,6 +22,12 @@ def update_body_image(space, body):
         r = part.r
         space.coords(part.image, x - r, y - r, x + r, y + r)
 
+def delete(space, body):
+    for connect in body.connects:
+        space.delete(connect.image)
+    for part in body.parts:
+        space.delete(part.image)
+
 
 def create_block_image(space, block):
     block.image = space.create_polygon(*block.points, fill="black")

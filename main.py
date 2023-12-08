@@ -24,11 +24,13 @@ blocks.append(Block([[window_width - 20, -30], [window_width + 20, -30],
 blocks.append(Block([[-100, -30], [20, -30], [20, 630], [-100, 630]]))
 blocks.append(Block([[300, 600], [500, 400], [500, 600]]))
 
-parts = [Particle(np.array([window_width / 2, window_height / 2]), 5, color="blue", V=np.array([-0., 5.])),
-         Particle(np.array([window_width / 2 + 50, window_height / 2]), 5, color="red", V=np.array([0., 0.])),
-         Particle(np.array([window_width / 2 + 50, window_height / 2 + 50]), 5, color="green", V=np.array([0., 0.])),
-         Particle(np.array([window_width / 2, window_height / 2 + 50]), 5),
-         Particle(np.array([window_width / 2 + 25, window_height / 2 + 25]), 5)]
+blocks.append(Block([[0, 300], [0, 280], [300, 280], [300, 300]]))
+"""
+parts = [Particle(0, np.array([window_width / 2, window_height / 2]), 5, color="blue", V=np.array([-0., 5.])),
+         Particle(1, np.array([window_width / 2 + 50, window_height / 2]), 5, color="red", V=np.array([0., 0.])),
+         Particle(2, np.array([window_width / 2 + 50, window_height / 2 + 50]), 5, color="green", V=np.array([0., 0.])),
+         Particle(3, np.array([window_width / 2, window_height / 2 + 50]), 5),
+         Particle(4, np.array([window_width / 2 + 25, window_height / 2 + 25]), 5)]
 
 connects = [Connection((parts[0], parts[1])),
             Connection((parts[0], parts[3])),
@@ -38,10 +40,10 @@ connects = [Connection((parts[0], parts[1])),
             Connection((parts[2], parts[3])),
             Connection((parts[2], parts[4])),
             Connection((parts[3], parts[4]))]
+"""
 
-
-bodies.append(Body(connects=connects, parts=parts))
-
+#bodies.append(Body(connects=connects, parts=parts))
+#save_body_data(bodies[0].name, parts, connects)
 
 def start_sim():
     global simulation_started
@@ -78,6 +80,19 @@ def simulation():
     if simulation_started:
         space.after(10, simulation)
 
+def save_data():
+    for body in bodies:
+        save_body_data(body.name, body.parts, body.connects)
+
+def reset():
+    global bodies
+    stop_sim()
+    delete(space, bodies[0])
+    for body in bodies:
+        parts, connects = load_body_data('Body1')
+        body.parts = parts
+        body.connects = connects
+    space.after(10, start_sim)
 
 def mousedown(event):
     global captured_part
@@ -111,6 +126,9 @@ def main():
     global start_button
     global space
 
+    parts, connects = load_body_data('Body1')
+    bodies.append(Body(connects=connects, parts=parts))
+
     root = tkinter.Tk()
     root.title("Soft-body")
     # пространство отображается на холсте типа Canvas
@@ -125,6 +143,12 @@ def main():
 
     start_button = tkinter.Button(frame, text="Start", command=start_sim)
     start_button.pack()
+
+    save_button = tkinter.Button(frame, text="Save", command=save_data)
+    save_button.pack()
+
+    reset_button = tkinter.Button(frame, text="Reset", command=reset)
+    reset_button.pack()
     # start_button.bind('<Button-1>', start_sim)
     # start_button.pack(side=tkinter.RIGHT)
 

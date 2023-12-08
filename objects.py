@@ -10,7 +10,8 @@ class Particle:
     F = np.zeros(2)
     image = None
 
-    def __init__(self, pos: np.ndarray, r, m=1, V=np.zeros(2), color='black'):
+    def __init__(self, number, pos: np.ndarray, r, m=1, V=np.zeros(2), color='black'):
+        self.number = number
         self.pos = pos
         self.V = V
         self.r = r
@@ -55,9 +56,10 @@ class Particle:
 
 
 class Body:
-    def __init__(self, connects=[], parts=[]):
+    def __init__(self, connects=[], parts=[], name='Body1'):
         self.connects = connects
         self.parts = parts
+        self.name = name
 
     def update_pos(self, dt, N):
         for i in range(N):
@@ -82,7 +84,7 @@ class Connection:
 
     image = None
 
-    def __init__(self, parts):
+    def __init__(self, *parts):
         self.parts = parts
         self.eq_dist = np.linalg.norm(self.parts[0].pos - self.parts[1].pos)
 
