@@ -16,15 +16,15 @@ N = 3
 
 mouse_pos = np.zeros(2)
 
-blocks.append(Block([[-100, window_height - 20], [window_width + 100, window_height - 20],
-                     [window_width + 100, window_height + 50],[-100, window_height + 50]]))
-blocks.append(Block([[-100, 20], [window_width + 100, 20], [window_width + 100, -50], [-100, -50]]))
-blocks.append(Block([[window_width - 20, -30], [window_width + 20, -30],
-                     [window_width + 20, window_height + 30],[window_width - 20, window_height + 30]]))
-blocks.append(Block([[-100, -30], [20, -30], [20, 630], [-100, 630]]))
+blocks.append(Block([[-200, window_height - 10], [window_width + 200, window_height - 10],
+                     [window_width + 200, window_height + 200],[-200, window_height + 200]]))
+blocks.append(Block([[-200, 10], [window_width + 200, 10], [window_width + 200, -250], [-100, -250]]))
+blocks.append(Block([[window_width - 10, -100], [window_width + 100, -100],
+                     [window_width + 100, window_height + 100],[window_width - 10, window_height + 100]]))
+blocks.append(Block([[-100, -100], [10, -100], [10, window_height+100], [-100, window_height+100]]))
 blocks.append(Block([[300, 600], [500, 400], [500, 600]]))
 
-parts = [Particle(np.array([window_width / 2, window_height / 2]), 5, color="blue", V=np.array([-0., 5.])),
+parts = [Particle(np.array([window_width / 2, window_height / 2]), 5, color="blue", V=np.array([-0., 0.])),
          Particle(np.array([window_width / 2 + 50, window_height / 2]), 5, color="red", V=np.array([0., 0.])),
          Particle(np.array([window_width / 2 + 50, window_height / 2 + 50]), 5, color="green", V=np.array([0., 0.])),
          Particle(np.array([window_width / 2, window_height / 2 + 50]), 5),
@@ -69,7 +69,7 @@ def stop_sim():
 
 def simulation():
     for body in bodies:
-        body.update_pos(DT, 2)
+        body.update_pos(DT, 1)
         update_body_image(space, body)
 
     move_captured_part()
@@ -104,7 +104,7 @@ def move_captured_part():
     global mouse_pos
     if captured_part:
         r_vector = mouse_pos - captured_part.pos
-        captured_part.F += r_vector / np.linalg.norm(r_vector) * min([20 ,(math.exp(np.linalg.norm(r_vector)/15)/10-1)])
+        captured_part.F += r_vector / np.linalg.norm(r_vector) * min([5 ,(math.exp(np.linalg.norm(r_vector)/15)-1)/10])
 
 def main():
     global start_button
