@@ -39,6 +39,7 @@ connects = [Connection((parts[0], parts[1])),
             Connection((parts[2], parts[4])),
             Connection((parts[3], parts[4]))]
 
+
 bodies.append(Body(connects=connects, parts=parts))
 
 
@@ -126,6 +127,7 @@ def main():
     start_button.pack()
     # start_button.bind('<Button-1>', start_sim)
     # start_button.pack(side=tkinter.RIGHT)
+
 
     start_sim()
 
