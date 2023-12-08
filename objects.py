@@ -71,7 +71,7 @@ class Body:
 
     def update_force(self):
         for part in self.parts:
-            part.F += np.array([0., 0.0])
+            part.F += np.array([0., 0.2])
         for connect in self.connects:
             connect.calculate_parts_force()
 
