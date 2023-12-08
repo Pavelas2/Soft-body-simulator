@@ -28,8 +28,8 @@ class Particle:
         for part in [x for x in parts if x != self]:
             r_vector = part.pos - self.pos
             if np.linalg.norm(r_vector) <= self.r + part.r:
-                part.pos += r_vector / 2 *0.9
-                self.pos -= r_vector / 2 *0.9
+                part.pos += r_vector / 2 * 0.9
+                self.pos -= r_vector / 2 * 0.9
                 V1 = np.linalg.norm(self.V)
                 V2 = np.linalg.norm(part.V)
                 A1 = math.atan2(self.V[1], self.V[0])
@@ -37,22 +37,25 @@ class Particle:
                 phi = math.atan2(r_vector[1], r_vector[0])
                 m1 = self.m
                 m2 = part.m
-                V1x = ((V1*math.cos(A1-phi)*(m1 - m2) + 2*m2*V2*math.cos(A2-phi))/(m1+m2)*math.cos(phi)
-                       + V1*math.sin(A1-phi)*math.cos(phi + math.pi/2))
-                V1y = ((V1 * math.cos(A1 - phi) * (m1 - m2) + 2 * m2 * V2 * math.cos(A2 - phi)) / (m1 + m2) * math.sin(phi)
+                V1x = ((V1 * math.cos(A1 - phi) * (m1 - m2) + 2 * m2 * V2 * math.cos(A2 - phi)) / (m1 + m2) * math.cos(
+                    phi)
+                       + V1 * math.sin(A1 - phi) * math.cos(phi + math.pi / 2))
+                V1y = ((V1 * math.cos(A1 - phi) * (m1 - m2) + 2 * m2 * V2 * math.cos(A2 - phi)) / (m1 + m2) * math.sin(
+                    phi)
                        + V1 * math.sin(A1 - phi) * math.sin(phi + math.pi / 2))
-                V2x = ((V2 * math.cos(A2 - phi) * (m2 - m1) + 2 * m1 * V1 * math.cos(A1 - phi)) / (m1 + m2) * math.cos(phi)
+                V2x = ((V2 * math.cos(A2 - phi) * (m2 - m1) + 2 * m1 * V1 * math.cos(A1 - phi)) / (m1 + m2) * math.cos(
+                    phi)
                        + V2 * math.sin(A2 - phi) * math.cos(phi + math.pi / 2))
-                V2y = ((V2 * math.cos(A2 - phi) * (m2 - m1) + 2 * m1 * V1 * math.cos(A1 - phi)) / (m1 + m2) * math.sin(phi)
+                V2y = ((V2 * math.cos(A2 - phi) * (m2 - m1) + 2 * m1 * V1 * math.cos(A1 - phi)) / (m1 + m2) * math.sin(
+                    phi)
                        + V2 * math.sin(A2 - phi) * math.sin(phi + math.pi / 2))
 
                 self.V = np.array([V1x, V1y])
                 part.V = np.array([V2x, V2y])
 
-            F = 0.8 * r_vector/(np.linalg.norm(r_vector)**2)
-            #self.F -= F
-            #part.F += F
-
+            if np.linalg.norm(r_vector) <= 50:
+                F = 2.5 * r_vector / (np.linalg.norm(r_vector) ** 4)
+                self.F -= F
 
 
 class Body:
@@ -65,8 +68,8 @@ class Body:
         for i in range(N):
             self.update_force()
             for part in self.parts:
-                part.move(dt / N)
                 part.self_collision(self.parts)
+                part.move(dt / N)
                 for block in blocks:
                     collision(part, block)
                 part.F = np.zeros(2)
@@ -103,7 +106,6 @@ class Block:
 
     def __init__(self, points):
         self.points = points
-
 
 
 blocks = []
