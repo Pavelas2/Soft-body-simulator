@@ -1,5 +1,7 @@
 import tkinter
 from tkinter.messagebox import showinfo
+from pathlib import Path
+import re
 
 import numpy as np
 
@@ -19,14 +21,13 @@ N = 3
 mouse_pos = np.zeros(2)
 
 blocks.append(Block([[-100, window_height - 20], [window_width + 100, window_height - 20],
-                     [window_width + 100, window_height + 50],[-100, window_height + 50]]))
+                     [window_width + 100, window_height + 50], [-100, window_height + 50]]))
 blocks.append(Block([[-100, 20], [window_width + 100, 20], [window_width + 100, -50], [-100, -50]]))
 blocks.append(Block([[window_width - 20, -30], [window_width + 20, -30],
-                     [window_width + 20, window_height + 30],[window_width - 20, window_height + 30]]))
+                     [window_width + 20, window_height + 30], [window_width - 20, window_height + 30]]))
 blocks.append(Block([[-100, -30], [20, -30], [20, 630], [-100, 630]]))
 blocks.append(Block([[300, 600], [500, 400], [500, 600]]))
 blocks.append(Block([[0, 300], [0, 280], [300, 280], [300, 300]]))
-
 
 """
 parts = [Particle(0, np.array([window_width / 2, window_height / 2]), 5, color="blue", V=np.array([-0., 5.])),
@@ -45,8 +46,9 @@ connects = [Connection((parts[0], parts[1])),
             Connection((parts[3], parts[4]))]
 """
 
-#bodies.append(Body(connects=connects, parts=parts))
-#save_body_data(bodies[0].name, parts, connects)
+
+# bodies.append(Body(connects=connects, parts=parts))
+# save_body_data(bodies[0].name, parts, connects)
 
 def start_sim():
     global simulation_started
@@ -54,12 +56,6 @@ def start_sim():
 
     start_button["text"] = "Stop"
     start_button["command"] = stop_sim
-
-    for body in bodies:
-        create_body_image(space, body)
-
-    for block in blocks:
-        create_block_image(space, block)
 
     space.create_oval(-10, -10, 10, 10)
     simulation()
@@ -83,22 +79,40 @@ def simulation():
     check_selection()
 
     if simulation_started:
-        space.after(15, simulation)
+        space.after(10, simulation)
+
 
 def save_data():
     for body in bodies:
         save_body_data(body.name, body.parts, body.connects)
 
+
 def reset():
     global bodies
+    global body_listbox
     stop_sim()
-    delete(space, bodies[0])
+    delete(space, bodies)
 
-    for i in range(len(bodies)):
-        parts, connects = load_body_data(f'Body {i+1}')
-        bodies[i].parts = parts
-        bodies[i].connects = connects
-    space.after(10, start_sim)
+    bodies = []
+
+    body_listbox['listvariable'] = tkinter.Variable(value=[])
+
+    for path in Path("./bodydata").glob('*'):
+        name = re.search(r"\\([a-zA-Z0-9_.+-]*)([\s_a-zA-Z0-9.+-]*)([a-zA-Z0-9-]*)[.]+", str(path))[0][1:-1]
+        parts, connects = load_body_data(str(path))
+        bodies.append(Body(parts=parts, connects=connects, name=name))
+
+    for body in bodies:
+        print(*body.parts, "\n", sep="\n")
+        create_body_image(space, body)
+
+    body_listbox['listvariable'] = tkinter.Variable(value=[x.name for x in bodies])
+
+    for block in blocks:
+        create_block_image(space, block)
+
+    start_sim()
+
 
 def mousedown(event):
     global captured_part
@@ -115,7 +129,7 @@ def mousedown(event):
                         break
     elif add_part.get() and body_listbox.curselection():
         body = bodies[body_listbox.curselection()[0]]
-        new_part = Particle(body.parts[-1].number+1, np.array([event.x, event.y], dtype=float), 5)
+        new_part = Particle(len(body.parts), np.array([event.x, event.y], dtype=float), 5)
         create_part_image(space, new_part)
         body.parts.append(new_part)
 
@@ -133,6 +147,8 @@ def mousemove(event):
 def check_selection():
     if body_listbox.curselection():
         bodies[body_listbox.curselection()[0]].chosen = True
+        for body in [x for x in bodies if x != bodies[body_listbox.curselection()[0]]]:
+            body.chosen = False
 
 
 def move_captured_part():
@@ -164,9 +180,6 @@ def main():
 
     global add_part_button
     global add_part
-
-    parts, connects = load_body_data('Body 1')
-    bodies.append(Body(connects=connects, parts=parts))
 
     root = tkinter.Tk()
     root.title("Soft-body")
@@ -217,6 +230,14 @@ def main():
     add_part_button.grid()
 
     grab_button["command"] = add_part_button.deselect
+
+    reset()
+
+    for body in bodies:
+        create_body_image(space, body)
+
+    for block in blocks:
+        create_block_image(space, block)
 
     start_sim()
 

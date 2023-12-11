@@ -2,8 +2,7 @@ import os
 from objects import *
 
 def load_body_data(filename):
-    filepath = os.path.join('bodydata', filename + '.txt')
-    print(filepath)
+    filepath = os.path.join(filename)
     with open (filepath, 'r') as f:
         parts = []
         connects = []
