@@ -30,7 +30,7 @@ blocks.append(Block([[300, 600], [500, 400], [500, 600]]))
 blocks.append(Block([[0, 300], [0, 280], [300, 280], [300, 300]]))
 
 
-parts = [Particle(0, np.array([window_width / 2, window_height / 2]), 5, color="blue", V=np.array([-0., 5.])),
+'''parts = [Particle(0, np.array([window_width / 2, window_height / 2]), 5, color="blue", V=np.array([-0., 5.])),
          Particle(1, np.array([window_width / 2 + 50, window_height / 2]), 5, color="red", V=np.array([0., 0.])),
          Particle(2, np.array([window_width / 2 + 50, window_height / 2 + 50]), 5, color="green", V=np.array([0., 0.])),
          Particle(3, np.array([window_width / 2, window_height / 2 + 50]), 5),
@@ -47,7 +47,7 @@ connects = [Connection(parts[0], parts[1]),
 
 
 
-bodies.append(Body(connects=connects, parts=parts))
+bodies.append(Body(connects=connects, parts=parts))'''
 # save_body_data(bodies[0].name, parts, connects)
 
 def start_sim():
@@ -233,7 +233,6 @@ def main():
 
     grab_button["command"] = add_part_button.deselect
 
-    #reset()
 
     for body in bodies:
         create_body_image(space, body)
