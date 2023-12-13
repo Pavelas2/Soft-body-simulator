@@ -36,7 +36,7 @@ def stop_sim():
 
 def simulation():
     for body in bodies:
-        body.update_pos(DT, 2)
+        body.update_pos(DT, 1)
         update_body_image(space, body)
 
     move_captured_part()
@@ -97,7 +97,7 @@ def mouse_down(event):
 
 def add_part(event):
     body = bodies[body_listbox.curselection()[0]]
-    new_part = Particle(len(body.parts), np.array([event.x, event.y], dtype=float), 5)
+    new_part = Particle(len(body.parts), np.array([event.x, event.y], dtype=float), 5, V=np.zeros(2, float))
     create_part_image(space, new_part)
     body.parts.append(new_part)
 
