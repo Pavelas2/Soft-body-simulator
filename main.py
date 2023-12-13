@@ -1,52 +1,19 @@
-import tkinter
-from tkinter.messagebox import showinfo
-from pathlib import Path
-from numpy.linalg import norm
 import re
+import tkinter
+from pathlib import Path
+from tkinter.messagebox import showinfo
 
-import numpy as np
+from numpy.linalg import norm
 
+from constants import *
 from save import *
 from visual import *
-from physic import *
-from objects import *
-import itertools as it
 
 simulation_started = True
 
-grab = None
-bodies = []
 captured_part = None
-N = 3
 
 mouse_pos = np.zeros(2)
-
-blocks.append(Block([[-100, window_height - 20], [window_width + 100, window_height - 20],
-                     [window_width + 100, window_height + 50], [-100, window_height + 50]]))
-blocks.append(Block([[-100, 20], [window_width + 100, 20], [window_width + 100, -50], [-100, -50]]))
-blocks.append(Block([[window_width - 20, -30], [window_width + 20, -30],
-                     [window_width + 20, window_height + 30], [window_width - 20, window_height + 30]]))
-blocks.append(Block([[-100, -30], [20, -30], [20, 630], [-100, 630]]))
-blocks.append(Block([[300, 600], [500, 400], [500, 600]]))
-blocks.append(Block([[0, 300], [0, 280], [300, 280], [300, 300]]))
-
-parts = [Particle(0, np.array([window_width / 2, window_height / 2]), 5, color="blue", V=np.array([-0., 5.])),
-         Particle(1, np.array([window_width / 2 + 50, window_height / 2]), 5, color="red", V=np.array([0., 0.])), ]
-'''         Particle(2, np.array([window_width / 2 + 50, window_height / 2 + 50]), 5, color="green", V=np.array([0., 0.])),
-         Particle(3, np.array([window_width / 2, window_height / 2 + 50]), 5),
-         Particle(4, np.array([window_width / 2 + 25, window_height / 2 + 25]), 5)]'''
-
-connects = [Connection(parts[0], parts[1]), ]
-'''           Connection(parts[0], parts[3]),
-            Connection(parts[0], parts[4]),
-            Connection(parts[1], parts[2]),
-            Connection(parts[1], parts[4]),
-            Connection(parts[2], parts[3]),
-            Connection(parts[2], parts[4]),
-            Connection(parts[3], parts[4])]'''
-
-bodies.append(Body(connects=connects, parts=parts))
-save_body_data(bodies[0].name, bodies[0])
 
 
 def start_sim():
@@ -111,7 +78,7 @@ def reset():
         create_block_image(space, block)
 
 
-def mousedown(event):
+def mouse_down(event):
     global captured_part
     global grab
     global adding_part
@@ -135,12 +102,12 @@ def add_part(event):
     body.parts.append(new_part)
 
 
-def mouseup(event):
+def mouse_up(event):
     global captured_part
     captured_part = None
 
 
-def mousemove(event):
+def mouse_move(event):
     global mouse_pos
     mouse_pos = np.array([event.x, event.y])
 
@@ -185,10 +152,10 @@ def main():
     root.title("Soft-body")
 
     # пространство отображается на холсте типа Canvas
-    space = tkinter.Canvas(root, width=window_width, height=window_height, bg="white")
-    space.bind('<Button-1>', mousedown)
-    space.bind('<Motion>', mousemove)
-    space.bind('<ButtonRelease-1>', mouseup)
+    space = tkinter.Canvas(root, width=WIDTH, height=HEIGHT, bg="white")
+    space.bind('<Button-1>', mouse_down)
+    space.bind('<Motion>', mouse_move)
+    space.bind('<ButtonRelease-1>', mouse_up)
     space.pack(side=tkinter.LEFT)
 
     # панель с кнопками
@@ -246,4 +213,5 @@ def main():
 
 
 if __name__ == '__main__':
+    make_bounds()
     main()

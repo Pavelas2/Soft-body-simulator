@@ -1,13 +1,10 @@
-window_width = 600
-window_height = 600
-
-
 def create_body_image(space, body):
     for connect in body.connects:
         if not connect.image:
             connect.image = space.create_line(*connect.parts[0].pos, *connect.parts[1].pos, fill='black')
     for part in body.parts:
         create_part_image(space, part)
+
 
 def create_part_image(space, part):
     if not part.image:
@@ -26,6 +23,7 @@ def update_body_image(space, body):
         y = part.pos[1]
         r = part.r
         space.coords(part.image, x - r, y - r, x + r, y + r)
+
 
 def delete(space, bodies):
     for body in bodies:

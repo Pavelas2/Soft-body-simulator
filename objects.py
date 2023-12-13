@@ -1,4 +1,5 @@
 import math
+from constants import *
 
 from physic import *
 
@@ -34,20 +35,24 @@ class Particle:
                 phi = math.atan2(r_vector[1], r_vector[0])
                 m1 = self.m
                 m2 = part.m
-                V1x = ((V1*math.cos(A1-phi)*(m1 - m2) + 2*m2*V2*math.cos(A2-phi))/(m1+m2)*math.cos(phi)
-                       + V1*math.sin(A1-phi)*math.cos(phi + math.pi/2))
-                V1y = ((V1 * math.cos(A1 - phi) * (m1 - m2) + 2 * m2 * V2 * math.cos(A2 - phi)) / (m1 + m2) * math.sin(phi)
+                V1x = ((V1 * math.cos(A1 - phi) * (m1 - m2) + 2 * m2 * V2 * math.cos(A2 - phi)) / (m1 + m2) * math.cos(
+                    phi)
+                       + V1 * math.sin(A1 - phi) * math.cos(phi + math.pi / 2))
+                V1y = ((V1 * math.cos(A1 - phi) * (m1 - m2) + 2 * m2 * V2 * math.cos(A2 - phi)) / (m1 + m2) * math.sin(
+                    phi)
                        + V1 * math.sin(A1 - phi) * math.sin(phi + math.pi / 2))
-                V2x = ((V2 * math.cos(A2 - phi) * (m2 - m1) + 2 * m1 * V1 * math.cos(A1 - phi)) / (m1 + m2) * math.cos(phi)
+                V2x = ((V2 * math.cos(A2 - phi) * (m2 - m1) + 2 * m1 * V1 * math.cos(A1 - phi)) / (m1 + m2) * math.cos(
+                    phi)
                        + V2 * math.sin(A2 - phi) * math.cos(phi + math.pi / 2))
-                V2y = ((V2 * math.cos(A2 - phi) * (m2 - m1) + 2 * m1 * V1 * math.cos(A1 - phi)) / (m1 + m2) * math.sin(phi)
+                V2y = ((V2 * math.cos(A2 - phi) * (m2 - m1) + 2 * m1 * V1 * math.cos(A1 - phi)) / (m1 + m2) * math.sin(
+                    phi)
                        + V2 * math.sin(A2 - phi) * math.sin(phi + math.pi / 2))
 
                 self.V = np.array([V1x, V1y])
                 part.V = np.array([V2x, V2y])
 
             if np.linalg.norm(r_vector) <= 30:
-                F = 1 * r_vector / ((np.linalg.norm(r_vector)/3) ** 3)
+                F = 1 * r_vector / ((np.linalg.norm(r_vector) / 3) ** 3)
                 self.F -= F
 
 
@@ -104,3 +109,15 @@ class Block:
 
 
 blocks = []
+bodies = []
+
+
+def make_bounds():
+    blocks.append(Block([[-100, HEIGHT - 20], [WIDTH + 100, HEIGHT - 20],
+                         [WIDTH + 100, HEIGHT + 50], [-100, HEIGHT + 50]]))
+    blocks.append(Block([[-100, 20], [WIDTH + 100, 20], [WIDTH + 100, -50], [-100, -50]]))
+    blocks.append(Block([[WIDTH - 20, -30], [WIDTH + 20, -30],
+                         [WIDTH + 20, HEIGHT + 30], [WIDTH - 20, HEIGHT + 30]]))
+    blocks.append(Block([[-100, -30], [20, -30], [20, 630], [-100, 630]]))
+    blocks.append(Block([[300, 600], [500, 400], [500, 600]]))
+    blocks.append(Block([[0, 300], [0, 280], [300, 280], [300, 300]]))

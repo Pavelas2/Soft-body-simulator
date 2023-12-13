@@ -1,9 +1,10 @@
 import os
 from objects import *
 
+
 def load_body_data(filename):
     filepath = os.path.join(filename)
-    with open (filepath, 'r') as f:
+    with open(filepath, 'r') as f:
         parts = []
         connects = []
         lines = f.readlines()
@@ -21,7 +22,7 @@ def load_body_data(filename):
         f.close()
 
     return parts, connects
-    
+
 
 def save_body_data(filename, body):
     parts = body.parts
