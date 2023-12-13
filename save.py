@@ -18,11 +18,14 @@ def load_body_data(filename):
 
             elif line[0] == 'c':
                 connects.append(Connection(parts[int(line[1])], parts[int(line[2])]))
+        f.close()
 
     return parts, connects
     
 
-def save_body_data(filename, parts, connects):
+def save_body_data(filename, body):
+    parts = body.parts
+    connects = body.connects
     filepath = os.path.join('bodydata', filename + '.txt')
     with open(filepath, 'w') as f:
         for part in parts:
@@ -32,3 +35,5 @@ def save_body_data(filename, parts, connects):
         for connect in connects:
             line = f"c {connect.parts[0].number} {connect.parts[1].number}\n"
             f.write(line)
+
+        f.close()
