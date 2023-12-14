@@ -158,6 +158,11 @@ def add_body():
     else:
         showinfo(title="Info", message="Name already in use")
 
+def space_pressed(event):
+    if start_button["text"] == "Start":
+        start_sim()
+    else:
+        stop_sim()
 
 def main():
     global start_button
@@ -196,6 +201,7 @@ def main():
 
     start_button = tkinter.Button(frame, text="Start", command=start_sim)
     start_button.grid(row=3)
+    root.bind('<space>', space_pressed)
 
     save_button = tkinter.Button(frame, text="Save", command=save_data)
     save_button.grid(row=3, column=1)
