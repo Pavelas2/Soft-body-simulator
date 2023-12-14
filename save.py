@@ -10,12 +10,13 @@ def load_body_data(filename):
         lines = f.readlines()
         for i in range(len(lines)):
             line = lines[i].split()
+            print(line)
             if line[0] == 'p':
                 pos = np.array([float(line[1]), float(line[2])])
-                r = int(line[3])
-                m = int(line[4])
+                r = float(line[3])
+                m = float(line[4])
                 v = np.array([float(line[5]), float(line[6])])
-                parts.append(Particle(i, pos, r=r, V=v, m=m))
+                parts.append(Particle(i, pos, r=r, V=v, m=m) if line[7] == "basic" else Static_part(i, pos, r=r, V=v, m=m))
 
             elif line[0] == 'c':
                 connects.append(Connection(parts[int(line[1])], parts[int(line[2])]))
@@ -30,7 +31,7 @@ def save_body_data(filename, body):
     filepath = os.path.join('bodydata', filename + '.txt')
     with open(filepath, 'w') as f:
         for part in parts:
-            line = f"p {part.pos[0]} {part.pos[1]} {part.r} {part.m} {part.V[0]} {part.V[1]}\n"
+            line = f"p {part.pos[0]} {part.pos[1]} {part.r} {part.m} {part.V[0]} {part.V[1]} {part.type}\n"
             f.write(line)
 
         for connect in connects:
