@@ -1,9 +1,12 @@
 def create_body_image(space, body):
     for connect in body.connects:
-        if not connect.image:
-            connect.image = space.create_line(*connect.parts[0].pos, *connect.parts[1].pos, fill='black')
+        create_connection_image(space, connect)
     for part in body.parts:
         create_part_image(space, part)
+
+def create_connection_image(space, connect):
+    if not connect.image:
+        connect.image = space.create_line(*connect.parts[0].pos, *connect.parts[1].pos, fill='black')
 
 
 def create_part_image(space, part):

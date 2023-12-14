@@ -36,7 +36,7 @@ def stop_sim():
 
 def simulation():
     for body in bodies:
-        body.update_pos(DT, 1)
+        body.update_pos(DT, 2)
         update_body_image(space, body)
 
     move_captured_part()
@@ -60,39 +60,45 @@ def reset():
 
     bodies = []
 
-    body_listbox['listvariable'] = tkinter.Variable(value=[])
-
     for path in Path("./bodydata").glob('*'):
         name = re.search(r"\\([a-zA-Z0-9_.+-]*)([\s_a-zA-Z0-9.+-]*)([a-zA-Z0-9-]*)[.]+", str(path))[0][1:-1]
         parts, connects = load_body_data(str(path))
+        print(parts[0].V)
         bodies.append(Body(parts=parts, connects=connects, name=name))
 
     for body in bodies:
-        print(body.parts[0].V, "\n", sep="\n")
         create_body_image(space, body)
-
-    body_listbox['listvariable'] = tkinter.Variable(value=[x.name for x in bodies])
-    print(type(body_listbox.curselection()))
-
     for block in blocks:
         create_block_image(space, block)
+
+    body_listbox['listvariable'] = tkinter.Variable(value=[x.name for x in bodies])
 
 
 def mouse_down(event):
     global captured_part
     global grab
     global adding_part
-    n = 4
-    if grab.get():
-        if not captured_part:
-            for body in bodies:
-                for part in body.parts:
-                    if ((part.pos[0] - n * part.r <= event.x <= part.pos[0] + n * part.r)
-                            and (part.pos[1] - n * part.r <= event.y <= part.pos[1] + n * part.r)):
-                        captured_part = part
-                        break
+    global adding_con
+
+    if adding_con.get() or grab.get():
+        capture_part(event)
     elif adding_part.get() and body_listbox.curselection():
         add_part(event)
+
+
+def is_point_on_part(event, part):
+    return ((part.pos[0] - 3 * part.r <= event.x <= part.pos[0] + 3 * part.r)
+            and (part.pos[1] - 3 * part.r <= event.y <= part.pos[1] + 3 * part.r))
+
+
+def capture_part(event):
+    global captured_part
+    if not captured_part:
+        for body in bodies:
+            for part in body.parts:
+                if is_point_on_part(event, part):
+                    captured_part = part
+                    break
 
 
 def add_part(event):
@@ -102,8 +108,22 @@ def add_part(event):
     body.parts.append(new_part)
 
 
+def add_connection(event):
+    connection_added = False
+    if adding_con.get() and body_listbox.curselection():
+        body = bodies[body_listbox.curselection()[0]]
+        for part in body.parts:
+            if is_point_on_part(event, part):
+                if captured_part in body.parts and part in body.parts and not connection_added:
+                    new_connect = Connection(part, captured_part)
+                    create_connection_image(space, new_connect)
+                    body.connects.append(new_connect)
+                    connection_added = True
+
+
 def mouse_up(event):
     global captured_part
+    add_connection(event)
     captured_part = None
 
 
@@ -121,9 +141,9 @@ def check_selection(event):
 
 def move_captured_part():
     global mouse_pos
-    if captured_part:
+    if captured_part and not adding_con.get():
         r_vector = mouse_pos - captured_part.pos
-        captured_part.F += (r_vector - captured_part.V) / norm(r_vector) * min([5, 1/2*1.5**np.linalg.norm(r_vector)])
+        captured_part.F += 0.8*(r_vector - 1/10*captured_part.V) / norm(r_vector) * min([50, 1.8 ** np.linalg.norm(r_vector)])
 
 
 def add_body():
@@ -147,6 +167,8 @@ def main():
 
     global add_part_button
     global adding_part
+
+    global adding_con
 
     root = tkinter.Tk()
     root.title("Soft-body")
@@ -194,10 +216,16 @@ def main():
     grab_button.grid()
 
     adding_part = tkinter.IntVar(value=0)
-    add_part_button = tkinter.Checkbutton(frame, text="Add particular", variable=adding_part, command=grab_button.deselect)
+    add_part_button = tkinter.Checkbutton(frame, text="Add particular", variable=adding_part,
+                                          command=grab_button.deselect)
     add_part_button.grid()
 
     grab_button["command"] = add_part_button.deselect
+
+    adding_con = tkinter.IntVar(value=0)
+    adding_con_button = tkinter.Checkbutton(frame, text="Add connection", variable=adding_con,
+                                            command=add_part_button.deselect)
+    adding_con_button.grid()
 
     # reset()
 

@@ -51,8 +51,8 @@ class Particle:
                 self.V = np.array([V1x, V1y])
                 part.V = np.array([V2x, V2y])
 
-            if np.linalg.norm(r_vector) <= 30:
-                F = 1 * r_vector / ((np.linalg.norm(r_vector) / 3) ** 3)
+            if np.linalg.norm(r_vector) <= 200:
+                F = 1.0 * r_vector / ((np.linalg.norm(r_vector) / 1) ** 50)
                 self.F -= F
 
 
@@ -82,8 +82,8 @@ class Body:
 
 
 class Connection:
-    k = 0.3
-    k_d = 0.3
+    k = 1.2
+    k_d = 0.2
 
     image = None
 
@@ -113,11 +113,9 @@ bodies = []
 
 
 def make_bounds():
-    blocks.append(Block([[-100, HEIGHT - 20], [WIDTH + 100, HEIGHT - 20],
-                         [WIDTH + 100, HEIGHT + 50], [-100, HEIGHT + 50]]))
-    blocks.append(Block([[-100, 20], [WIDTH + 100, 20], [WIDTH + 100, -50], [-100, -50]]))
-    blocks.append(Block([[WIDTH - 20, -30], [WIDTH + 20, -30],
-                         [WIDTH + 20, HEIGHT + 30], [WIDTH - 20, HEIGHT + 30]]))
+    blocks.append(Block([[-100, HEIGHT - 20], [WIDTH + 100, HEIGHT - 20], [WIDTH + 100, HEIGHT + 100], [-100, HEIGHT + 100]]))
+    blocks.append(Block([[-100, 20], [WIDTH + 100, 20], [WIDTH + 100, -100], [-100, -100]]))
+    blocks.append(Block([[WIDTH - 20, -50], [WIDTH + 100, -50], [WIDTH + 100, HEIGHT + 50], [WIDTH - 20, HEIGHT + 50]]))
     blocks.append(Block([[-100, -30], [20, -30], [20, 630], [-100, 630]]))
     blocks.append(Block([[300, 600], [500, 400], [500, 600]]))
     blocks.append(Block([[0, 300], [0, 280], [300, 280], [300, 300]]))
