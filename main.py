@@ -16,12 +16,16 @@ captured_part = None
 mouse_pos = np.zeros(2)
 
 
-def start_sim():
+def start_sim(init=False):
     global simulation_started
     simulation_started = True
 
-    start_button["text"] = "Stop"
-    start_button["command"] = stop_sim
+    if init:
+        stop_sim()
+    else:
+        start_button["text"] = "Stop"
+        start_button["command"] = stop_sim
+        button_value.set(1)
 
     simulation()
 
@@ -61,9 +65,9 @@ def reset():
     bodies = []
 
     for path in Path("./bodydata").glob('*'):
-        name = re.search(r"/([a-zA-Z0-9_.+-]*)([\s_a-zA-Z0-9.+-]*)([a-zA-Z0-9-]*)[.]+", str(path))[0][1:-1]
+        name = re.search(r"(/|\\)([a-zA-Z0-9_.+-]*)([\s_a-zA-Z0-9.+-]*)([a-zA-Z0-9-]*)[.]+", str(path))[0][1:-1]
         parts, connects = load_body_data(str(path))
-        print(parts[0].V)
+        #print(parts[0].V)
         bodies.append(Body(parts=parts, connects=connects, name=name))
 
     for body in bodies:
@@ -76,12 +80,9 @@ def reset():
 
 def mouse_down(event):
     global captured_part
-   # global grab
     global button_value
-    #global adding_part
-    #global adding_con
+    space.focus_set()
     if button_value.get() in [1, 3]:
-    #if adding_con.get() or grab.get():
         capture_part(event)
     elif button_value.get() == 2 and body_listbox.curselection():
         add_part(event)
@@ -150,21 +151,28 @@ def move_captured_part():
 
 
 def add_body():
-    new_name = new_body_entry.get()
-    if new_name not in body_listbox.get(0, body_listbox.size()):
+    new_name = new_body_entry.get().strip()
+    if new_name not in body_listbox.get(0, body_listbox.size()) and new_name:
         new_body = Body(new_name)
         bodies.append(new_body)
         body_listbox.insert(body_listbox.size(), new_body.name)
-    else:
+        new_body_entry.delete(0, 'end')
+    elif new_name:
         showinfo(title="Info", message="Name already in use")
 
 def space_pressed(event):
-    if start_button["text"] == "Start":
-        start_sim()
-    else:
-        stop_sim()
+    if root.focus_get() == space:
+        if start_button["text"] == "Start":
+            start_sim()
+        else:
+            stop_sim()
+
+def enter_pressed(event):
+    if root.focus_get() == new_body_entry:
+        add_body()
 
 def main():
+    global root
     global start_button
     global space
     global body_listbox
@@ -214,6 +222,7 @@ def main():
     new_body_entry = tkinter.Entry(frame)
     new_body_entry.grid(column=0, row=0, padx=3, pady=6, sticky=tkinter.EW)
     tkinter.Button(frame, text="Add body", command=add_body).grid(column=1, row=0, padx=6, pady=6)
+    root.bind('<Return>', enter_pressed)
 
     # создаем список
     body_listbox = tkinter.Listbox(frame, height=5, width=10,
@@ -242,7 +251,7 @@ def main():
     for block in blocks:
         create_block_image(space, block)
 
-    start_sim()
+    start_sim(init=True)
 
     root.mainloop()
 
