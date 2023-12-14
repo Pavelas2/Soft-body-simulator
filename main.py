@@ -67,7 +67,7 @@ def reset():
     bodies = []
 
     for path in Path("./bodydata").glob('*'):
-        name = re.search(r"\\([a-zA-Z0-9_.+-]*)([\s_a-zA-Z0-9.+-]*)([a-zA-Z0-9-]*)[.]+", str(path))[0][1:-1]
+        name = re.search(r"/([a-zA-Z0-9_.+-]*)([\s_a-zA-Z0-9.+-]*)([a-zA-Z0-9-]*)[.]+", str(path))[0][1:-1]
         parts, connects = load_body_data(str(path))
         bodies.append(Body(parts=parts, connects=connects, name=name))
 
@@ -81,13 +81,14 @@ def reset():
 
 def mouse_down(event):
     global captured_part
-    global grab
-    global adding_part
-    global adding_con
-
-    if adding_con.get() or grab.get():
+   # global grab
+    global button_value
+    #global adding_part
+    #global adding_con
+    if button_value.get() in [1, 3]:
+    #if adding_con.get() or grab.get():
         capture_part(event)
-    elif adding_part.get() and body_listbox.curselection():
+    elif button_value.get() == 2 and body_listbox.curselection():
         add_part(event)
 
 
@@ -114,8 +115,9 @@ def add_part(event):
 
 
 def add_connection(event):
+    global button_value
     connection_added = False
-    if adding_con.get() and body_listbox.curselection():
+    if button_value.get() == 3 and body_listbox.curselection():
         body = bodies[body_listbox.curselection()[0]]
         for part in body.parts:
             if is_point_on_part(event, part):
@@ -146,7 +148,8 @@ def check_selection(event):
 
 def move_captured_part():
     global mouse_pos
-    if captured_part and not adding_con.get():
+    global button_value
+    if captured_part and button_value.get() != 3:
         r_vector = mouse_pos - captured_part.pos
         captured_part.F += 0.8*(r_vector - 1/10*captured_part.V) / norm(r_vector) * min([50, 1.8 ** np.linalg.norm(r_vector)])
 
@@ -158,8 +161,13 @@ def add_body():
         bodies.append(new_body)
         body_listbox.insert(body_listbox.size(), new_body.name)
     else:
-        showinfo(title="Info", message="Body with this name already exist")
+        showinfo(title="Info", message="Name already in use")
 
+def space_pressed(event):
+    if start_button["text"] == "Start":
+        start_sim()
+    else:
+        stop_sim()
 
 def main():
     global root
@@ -171,10 +179,11 @@ def main():
     global grab_button
     global grab
 
-    global add_part_button
-    global adding_part
+    global button_value
+    #global add_part_button
+    #global adding_part
 
-    global adding_con
+    #global adding_con
 
     root = tkinter.Tk()
     root.title("Soft-body")
@@ -201,6 +210,7 @@ def main():
 
     start_button = tkinter.Button(frame, text="Start", command=start_sim)
     start_button.grid(row=3)
+    root.bind('<space>', space_pressed)
 
     save_button = tkinter.Button(frame, text="Save", command=save_data)
     save_button.grid(row=3, column=1)
@@ -212,7 +222,7 @@ def main():
 
     new_body_entry = tkinter.Entry(frame)
     new_body_entry.grid(column=0, row=0, padx=3, pady=6, sticky=tkinter.EW)
-    tkinter.Button(frame, text="Добавить", command=add_body).grid(column=1, row=0, padx=6, pady=6)
+    tkinter.Button(frame, text="Add body", command=add_body).grid(column=1, row=0, padx=6, pady=6)
 
     # создаем список
     body_listbox = tkinter.Listbox(frame, height=5, width=10,
@@ -220,20 +230,17 @@ def main():
     body_listbox.bind("<<ListboxSelect>>", check_selection)
     body_listbox.grid(row=1, column=0, columnspan=2, sticky=tkinter.EW, padx=5, pady=5)
 
+    button_value = tkinter.IntVar()
     grab = tkinter.IntVar(value=0)
-    grab_button = tkinter.Checkbutton(frame, text="Grab particular", variable=grab)
+    grab_button = tkinter.Radiobutton(frame, text="Grab particle", variable=button_value, value=1)
     grab_button.grid()
 
-    adding_part = tkinter.IntVar(value=0)
-    add_part_button = tkinter.Checkbutton(frame, text="Add particular", variable=adding_part,
-                                          command=grab_button.deselect)
+    #adding_part = tkinter.IntVar(value=0)
+    add_part_button = tkinter.Radiobutton(frame, text="Add particle", variable=button_value, value=2)
     add_part_button.grid()
 
-    grab_button["command"] = add_part_button.deselect
-
-    adding_con = tkinter.IntVar(value=0)
-    adding_con_button = tkinter.Checkbutton(frame, text="Add connection", variable=adding_con,
-                                            command=add_part_button.deselect)
+    #adding_con = tkinter.IntVar(value=0)
+    adding_con_button = tkinter.Radiobutton(frame, text="Add connection", variable=button_value, value=3)
     adding_con_button.grid()
 
     # reset()
