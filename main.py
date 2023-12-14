@@ -15,9 +15,9 @@ captured_part = None
 
 mouse_pos = np.zeros(2)
 
-
 def start_sim(init=False):
     global simulation_started
+    global root
     simulation_started = True
 
     if init:
@@ -40,7 +40,7 @@ def stop_sim():
 
 def simulation():
     for body in bodies:
-        body.update_pos(DT, 2)
+        body.update_pos(DT, 5)
         update_body_image(space, body)
 
     move_captured_part()
@@ -67,7 +67,6 @@ def reset():
     for path in Path("./bodydata").glob('*'):
         name = re.search(r"(/|\\)([a-zA-Z0-9_.+-]*)([\s_a-zA-Z0-9.+-]*)([a-zA-Z0-9-]*)[.]+", str(path))[0][1:-1]
         parts, connects = load_body_data(str(path))
-        #print(parts[0].V)
         bodies.append(Body(parts=parts, connects=connects, name=name))
 
     for body in bodies:
@@ -89,8 +88,8 @@ def mouse_down(event):
 
 
 def is_point_on_part(event, part):
-    return ((part.pos[0] - 3 * part.r <= event.x <= part.pos[0] + 3 * part.r)
-            and (part.pos[1] - 3 * part.r <= event.y <= part.pos[1] + 3 * part.r))
+    return ((part.pos[0] - 1.5 * part.r <= event.x <= part.pos[0] + 1.5 * part.r)
+            and (part.pos[1] - 1.5 * part.r <= event.y <= part.pos[1] + 1.5 * part.r))
 
 
 def capture_part(event):
@@ -189,12 +188,14 @@ def main():
 
     root = tkinter.Tk()
     root.title("Soft-body")
+    root.bind('<r>', lambda event: reset())
 
     # пространство отображается на холсте типа Canvas
     space = tkinter.Canvas(root, width=WIDTH, height=HEIGHT, bg="white")
     space.bind('<Button-1>', mouse_down)
     space.bind('<Motion>', mouse_move)
     space.bind('<ButtonRelease-1>', mouse_up)
+
     space.pack(side=tkinter.LEFT)
 
     # панель с кнопками

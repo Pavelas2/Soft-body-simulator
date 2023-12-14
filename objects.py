@@ -1,5 +1,6 @@
 import math
 from constants import *
+from numpy.linalg import norm
 
 from physic import *
 
@@ -7,6 +8,7 @@ from physic import *
 class Particle:
     F = np.zeros(2)
     image = None
+    type = "basic"
 
     def __init__(self, number, pos: np.ndarray, r, m=1, V=np.zeros(2), color='black'):
         self.number = number
@@ -20,13 +22,13 @@ class Particle:
     def move(self, dt):
         self.V += self.F / self.m * dt
         self.pos += self.V * dt
-        self.F = np.zeros(2)
 
     def self_collision(self, parts):
         for part in [x for x in parts if x != self]:
             r_vector = part.pos - self.pos
             if np.linalg.norm(r_vector) <= self.r + part.r:
-                part.pos += r_vector / 2 * 0.9
+                if part.type == 'basic':
+                    part.pos += r_vector / 2 * 0.9
                 self.pos -= r_vector / 2 * 0.9
                 V1 = np.linalg.norm(self.V)
                 V2 = np.linalg.norm(part.V)
@@ -51,9 +53,9 @@ class Particle:
                 self.V = np.array([V1x, V1y])
                 part.V = np.array([V2x, V2y])
 
-            if np.linalg.norm(r_vector) <= 200:
-                F = 1.0 * r_vector / ((np.linalg.norm(r_vector) / 1) ** 50)
-                self.F -= F
+            if norm(r_vector) <= 60:
+                F = 1 / 5 * r_vector / ((norm(r_vector) / 2) ** 2)
+                # self.F -= F
 
 
 class Body:
@@ -68,7 +70,7 @@ class Body:
         for i in range(N):
             self.update_force()
             for part in self.parts:
-                part.self_collision(self.parts)
+                #part.self_collision(self.parts)
                 part.move(dt / N)
                 for block in blocks:
                     collision(part, block)
@@ -82,7 +84,7 @@ class Body:
 
 
 class Connection:
-    k = 1.2
+    k = 0.01
     k_d = 0.2
 
     image = None
@@ -108,14 +110,27 @@ class Block:
         self.points = points
 
 
+class Static_part(Particle):
+    type = "static"
+
+    def __init__(self, number, pos: np.ndarray, r, m=1, V=np.zeros(2), color='black'):
+        Particle.__init__(self, number, pos, r, m=1, V=np.zeros(2), color='black')
+
+    def move(self, dt):
+        ...
+
+    def self_collision(self, parts):
+        ...
+
 blocks = []
 bodies = []
 
 
 def make_bounds():
-    blocks.append(Block([[-100, HEIGHT - 20], [WIDTH + 100, HEIGHT - 20], [WIDTH + 100, HEIGHT + 100], [-100, HEIGHT + 100]]))
+    blocks.append(
+        Block([[-100, HEIGHT - 20], [WIDTH + 100, HEIGHT - 20], [WIDTH + 100, HEIGHT + 100], [-100, HEIGHT + 100]]))
     blocks.append(Block([[-100, 20], [WIDTH + 100, 20], [WIDTH + 100, -100], [-100, -100]]))
     blocks.append(Block([[WIDTH - 20, -50], [WIDTH + 100, -50], [WIDTH + 100, HEIGHT + 50], [WIDTH - 20, HEIGHT + 50]]))
     blocks.append(Block([[-100, -30], [20, -30], [20, 630], [-100, 630]]))
-    blocks.append(Block([[300, 600], [500, 400], [500, 600]]))
-    blocks.append(Block([[0, 300], [0, 280], [300, 280], [300, 300]]))
+    # blocks.append(Block([[300, 600], [500, 400], [500, 600]]))
+    # blocks.append(Block([[0, 300], [0, 280], [300, 280], [300, 300]]))
