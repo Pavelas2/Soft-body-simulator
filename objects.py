@@ -24,40 +24,6 @@ class Particle:
         self.V += self.F / self.m * dt
         self.pos += self.V * dt
 
-    def self_collision(self, parts):
-        for part in [x for x in parts if x != self]:
-            r_vector = part.pos - self.pos
-            if np.linalg.norm(r_vector) <= self.r + part.r:
-                if part.type == 'basic':
-                    part.pos += r_vector / 2 * 0.9
-                self.pos -= r_vector / 2 * 0.9
-                V1 = np.linalg.norm(self.V)
-                V2 = np.linalg.norm(part.V)
-                A1 = math.atan2(self.V[1], self.V[0])
-                A2 = math.atan2(part.V[1], part.V[0])
-                phi = math.atan2(r_vector[1], r_vector[0])
-                m1 = self.m
-                m2 = part.m
-                V1x = ((V1 * math.cos(A1 - phi) * (m1 - m2) + 2 * m2 * V2 * math.cos(A2 - phi)) / (m1 + m2) * math.cos(
-                    phi)
-                       + V1 * math.sin(A1 - phi) * math.cos(phi + math.pi / 2))
-                V1y = ((V1 * math.cos(A1 - phi) * (m1 - m2) + 2 * m2 * V2 * math.cos(A2 - phi)) / (m1 + m2) * math.sin(
-                    phi)
-                       + V1 * math.sin(A1 - phi) * math.sin(phi + math.pi / 2))
-                V2x = ((V2 * math.cos(A2 - phi) * (m2 - m1) + 2 * m1 * V1 * math.cos(A1 - phi)) / (m1 + m2) * math.cos(
-                    phi)
-                       + V2 * math.sin(A2 - phi) * math.cos(phi + math.pi / 2))
-                V2y = ((V2 * math.cos(A2 - phi) * (m2 - m1) + 2 * m1 * V1 * math.cos(A1 - phi)) / (m1 + m2) * math.sin(
-                    phi)
-                       + V2 * math.sin(A2 - phi) * math.sin(phi + math.pi / 2))
-
-                self.V = np.array([V1x, V1y])
-                part.V = np.array([V2x, V2y])
-
-            if norm(r_vector) <= 60:
-                F = 1 / 5 * r_vector / ((norm(r_vector) / 2) ** 2)
-                # self.F -= F
-
 
 class Body:
     chosen = False
@@ -71,7 +37,6 @@ class Body:
         for i in range(N):
             self.update_force()
             for part in self.parts:
-                #part.self_collision(self.parts)
                 part.move(dt / N)
                 for block in blocks:
                     collision(part, block)
@@ -85,7 +50,7 @@ class Body:
 
 
 class Connection:
-    k = 0.01
+    k = 0.7
     k_d = 0.2
 
     image = None
@@ -123,6 +88,7 @@ class Static_part(Particle):
     def self_collision(self, parts):
         ...
 
+
 blocks = []
 bodies = []
 
@@ -134,12 +100,14 @@ def make_bounds():
     blocks.append(Block([[WIDTH - 20, -50], [WIDTH + 100, -50], [WIDTH + 100, HEIGHT + 50], [WIDTH - 20, HEIGHT + 50]]))
     blocks.append(Block([[-100, -30], [20, -30], [20, 630], [-100, 630]]))
 
+
 def show_blocks(space):
     global blocks
     blocks.append(Block([[300, 600], [500, 400], [500, 600]]))
     blocks.append(Block([[0, 300], [0, 280], [300, 280], [300, 300]]))
     for block in blocks:
         create_block_image(space, block)
+
 
 def hide_blocks(space):
     global blocks
