@@ -3,6 +3,7 @@ from constants import *
 from numpy.linalg import norm
 
 from physic import *
+from visual import *
 
 
 class Particle:
@@ -132,5 +133,17 @@ def make_bounds():
     blocks.append(Block([[-100, 20], [WIDTH + 100, 20], [WIDTH + 100, -100], [-100, -100]]))
     blocks.append(Block([[WIDTH - 20, -50], [WIDTH + 100, -50], [WIDTH + 100, HEIGHT + 50], [WIDTH - 20, HEIGHT + 50]]))
     blocks.append(Block([[-100, -30], [20, -30], [20, 630], [-100, 630]]))
-    # blocks.append(Block([[300, 600], [500, 400], [500, 600]]))
-    # blocks.append(Block([[0, 300], [0, 280], [300, 280], [300, 300]]))
+
+def show_blocks(space):
+    global blocks
+    blocks.append(Block([[300, 600], [500, 400], [500, 600]]))
+    blocks.append(Block([[0, 300], [0, 280], [300, 280], [300, 300]]))
+    for block in blocks:
+        create_block_image(space, block)
+
+def hide_blocks(space):
+    global blocks
+    delete_block_image(space, blocks[-1])
+    delete_block_image(space, blocks[-2])
+    del blocks[-1]
+    del blocks[-1]

@@ -38,3 +38,6 @@ def delete(space, bodies):
 
 def create_block_image(space, block):
     block.image = space.create_polygon(*block.points, fill="black")
+
+def delete_block_image(space, block):
+    space.delete(block.image)

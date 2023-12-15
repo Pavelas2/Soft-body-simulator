@@ -1,7 +1,7 @@
 import re
 import tkinter
 from pathlib import Path
-from tkinter.messagebox import showinfo
+from tkinter.messagebox import showinfo, askyesno
 
 from numpy.linalg import norm
 
@@ -22,6 +22,7 @@ def start_sim(init=False):
 
     if init:
         stop_sim()
+        reset()
     else:
         start_button["text"] = "Stop"
         start_button["command"] = stop_sim
@@ -61,7 +62,6 @@ def reset():
     global body_listbox
 
     delete(space, bodies)
-
     bodies = []
 
     for path in Path("./bodydata").glob('*'):
@@ -76,6 +76,29 @@ def reset():
 
     body_listbox['listvariable'] = tkinter.Variable(value=[x.name for x in bodies])
 
+def hide_body(get_name=False):
+    global bodies
+    global body_listbox
+
+    for i in range(len(bodies)):
+        if bodies[i].chosen:
+            name = bodies[i].name
+            if get_name:
+                return name
+            for connect in bodies[i].connects:
+                space.delete(connect.image)
+            for part in bodies[i].parts:
+                space.delete(part.image)
+            del bodies[i]
+            break
+
+def delete_body():
+    name = hide_body(get_name=True)
+    dialog = askyesno(message='Are you sure you want to delete "%s"?' % name)
+    if dialog:
+        hide_body()
+        path = os.path.join('bodydata', name + '.txt')
+        os.remove(path)
 
 def mouse_down(event):
     global captured_part
@@ -139,6 +162,8 @@ def check_selection(event):
         for body in bodies:
             body.chosen = False
         bodies[body_listbox.curselection()[0]].chosen = True
+        hide_button["state"] = 'normal'
+        delete_button["state"] = 'normal'
 
 
 def move_captured_part():
@@ -170,6 +195,15 @@ def enter_pressed(event):
     if root.focus_get() == new_body_entry:
         add_body()
 
+def show_blocks_clicked():
+    if show_blocks_button["text"] == 'Show obstacles':
+        show_blocks(space)
+        show_blocks_button["text"] = 'Hide obstacles'
+    else:
+        hide_blocks(space)
+        show_blocks_button["text"] = 'Show obstacles'
+
+
 def main():
     global root
     global start_button
@@ -179,12 +213,11 @@ def main():
 
     global grab_button
     global grab
+    global show_blocks_button
+    global delete_button
+    global hide_button
 
     global button_value
-    #global add_part_button
-    #global adding_part
-
-    #global adding_con
 
     root = tkinter.Tk()
     root.title("Soft-body")
@@ -209,7 +242,7 @@ def main():
     frame.rowconfigure(index=2, weight=1)
 
     start_button = tkinter.Button(frame, text="Start", command=start_sim)
-    start_button.grid(row=3)
+    start_button.grid(row=3, column=0)
     root.bind('<space>', space_pressed)
 
     save_button = tkinter.Button(frame, text="Save", command=save_data)
@@ -217,8 +250,15 @@ def main():
 
     reset_button = tkinter.Button(frame, text="Reset", command=reset)
     reset_button.grid(row=4, column=1)
-    # start_button.bind('<Button-1>', start_sim)
-    # start_button.pack(side=tkinter.RIGHT)
+    
+    delete_button =  tkinter.Button(frame, text="Delete object", command=delete_body)
+    delete_button.grid(row=2, column=1)
+
+    hide_button = tkinter.Button(frame, text="Hide object", command=hide_body)
+    hide_button.grid(row=2, column=0)
+
+    hide_button["state"] = 'disabled'
+    delete_button["state"] = 'disabled'
 
     new_body_entry = tkinter.Entry(frame)
     new_body_entry.grid(column=0, row=0, padx=3, pady=6, sticky=tkinter.EW)
@@ -233,7 +273,7 @@ def main():
 
     button_value = tkinter.IntVar()
     grab = tkinter.IntVar(value=0)
-    grab_button = tkinter.Radiobutton(frame, text="Grab particle", variable=button_value, value=1)
+    grab_button = tkinter.Radiobutton(frame, text="Grab object", variable=button_value, value=1)
     grab_button.grid()
 
     #adding_part = tkinter.IntVar(value=0)
@@ -244,6 +284,8 @@ def main():
     adding_con_button = tkinter.Radiobutton(frame, text="Add connection", variable=button_value, value=3)
     adding_con_button.grid()
 
+    show_blocks_button = tkinter.Button(frame, text="Show obstacles", command=show_blocks_clicked)
+    show_blocks_button.grid()
     # reset()
 
     for body in bodies:
