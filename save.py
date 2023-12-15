@@ -3,6 +3,7 @@ from objects import *
 
 
 def load_body_data(filename):
+    """Загружает тело"""
     filepath = os.path.join(filename)
     with open(filepath, 'r') as f:
         parts = []
@@ -26,6 +27,7 @@ def load_body_data(filename):
 
 
 def save_body_data(filename, body):
+    """Сохраняет тело"""
     parts = body.parts
     connects = body.connects
     filepath = os.path.join('bodydata', filename + '.txt')

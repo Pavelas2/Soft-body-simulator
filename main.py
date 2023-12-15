@@ -15,7 +15,9 @@ captured_part = None
 
 mouse_pos = np.zeros(2)
 
+
 def start_sim(init=False):
+    """Начинает моделирование"""
     global simulation_started
     global root
     simulation_started = True
@@ -32,6 +34,7 @@ def start_sim(init=False):
 
 
 def stop_sim():
+    """Останавливает моделирование"""
     global simulation_started
     simulation_started = False
 
@@ -40,6 +43,7 @@ def stop_sim():
 
 
 def simulation():
+    """Обработка физики"""
     for body in bodies:
         body.update_pos(DT, 5)
         update_body_image(space, body)
@@ -51,6 +55,7 @@ def simulation():
 
 
 def save_data():
+    """Сохраняет все тела"""
     for path in Path("./bodydata").glob('*'):
         os.remove(path)
     for body in bodies:
@@ -58,6 +63,7 @@ def save_data():
 
 
 def reset():
+    """Загружает тела"""
     global bodies
     global body_listbox
 
@@ -77,6 +83,7 @@ def reset():
     body_listbox['listvariable'] = tkinter.Variable(value=[x.name for x in bodies])
 
 def hide_body(get_name=False):
+    """Прячет тело"""
     global bodies
     global body_listbox
 
@@ -93,6 +100,7 @@ def hide_body(get_name=False):
             break
 
 def delete_body():
+    """Удаляет тело"""
     name = hide_body(get_name=True)
     dialog = askyesno(message='Are you sure you want to delete "%s"?' % name)
     if dialog:
@@ -104,6 +112,7 @@ def delete_body():
         pass
 
 def mouse_down(event):
+    """Обрабатывает нажатие мышки"""
     global captured_part
     global button_value
     space.focus_set()
@@ -114,11 +123,13 @@ def mouse_down(event):
 
 
 def is_point_on_part(event, part):
+    """Проверяет нажатие на частицу"""
     return ((part.pos[0] - 1.5 * part.r <= event.x <= part.pos[0] + 1.5 * part.r)
             and (part.pos[1] - 1.5 * part.r <= event.y <= part.pos[1] + 1.5 * part.r))
 
 
 def capture_part(event):
+    """Захватывает частицу"""
     global captured_part
     if not captured_part:
         for body in bodies:
@@ -129,6 +140,7 @@ def capture_part(event):
 
 
 def add_part(event):
+    """Добавляет частицу"""
     body = bodies[body_listbox.curselection()[0]]
     new_part = Particle(len(body.parts), np.array([event.x, event.y], dtype=float), 5, V=np.zeros(2, float))
     create_part_image(space, new_part)
@@ -174,7 +186,8 @@ def move_captured_part():
     global button_value
     if captured_part and button_value.get() != 3:
         r_vector = mouse_pos - captured_part.pos
-        captured_part.F += 0.8*(r_vector - 1/10*captured_part.V) / norm(r_vector) * min([50, 1.8 ** np.linalg.norm(r_vector)])
+        captured_part.F += 0.8 * (r_vector - 1 / 10 * captured_part.V) / norm(r_vector) * min(
+            [50, 1.8 ** np.linalg.norm(r_vector)])
 
 
 def add_body():
@@ -187,6 +200,7 @@ def add_body():
     elif new_name:
         showinfo(title="Info", message="Name already in use")
 
+
 def space_pressed(event):
     if root.focus_get() == space:
         if start_button["text"] == "Start":
@@ -194,9 +208,11 @@ def space_pressed(event):
         else:
             stop_sim()
 
+
 def enter_pressed(event):
     if root.focus_get() == new_body_entry:
         add_body()
+
 
 def show_blocks_clicked():
     if show_blocks_button["text"] == 'Show obstacles':
@@ -226,7 +242,7 @@ def main():
     root.title("Soft-body")
     root.bind('<r>', lambda event: reset())
 
-    # пространство отображается на холсте типа Canvas
+
     space = tkinter.Canvas(root, width=WIDTH, height=HEIGHT, bg="white")
     space.bind('<Button-1>', mouse_down)
     space.bind('<Motion>', mouse_move)
@@ -234,7 +250,7 @@ def main():
 
     space.pack(side=tkinter.LEFT)
 
-    # панель с кнопками
+
     frame = tkinter.Frame(root)
     frame.pack(side=tkinter.RIGHT)
 
@@ -268,7 +284,6 @@ def main():
     tkinter.Button(frame, text="Add body", command=add_body).grid(column=1, row=0, padx=6, pady=6)
     root.bind('<Return>', enter_pressed)
 
-    # создаем список
     body_listbox = tkinter.Listbox(frame, height=5, width=10,
                                    listvariable=tkinter.Variable(value=[x.name for x in bodies]))
     body_listbox.bind("<<ListboxSelect>>", check_selection)
@@ -279,11 +294,11 @@ def main():
     grab_button = tkinter.Radiobutton(frame, text="Grab object", variable=button_value, value=1)
     grab_button.grid()
 
-    #adding_part = tkinter.IntVar(value=0)
+    # adding_part = tkinter.IntVar(value=0)
     add_part_button = tkinter.Radiobutton(frame, text="Add particle", variable=button_value, value=2)
     add_part_button.grid()
 
-    #adding_con = tkinter.IntVar(value=0)
+    # adding_con = tkinter.IntVar(value=0)
     adding_con_button = tkinter.Radiobutton(frame, text="Add connection", variable=button_value, value=3)
     adding_con_button.grid()
 
