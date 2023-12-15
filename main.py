@@ -98,7 +98,10 @@ def delete_body():
     if dialog:
         hide_body()
         path = os.path.join('bodydata', name + '.txt')
+    try:
         os.remove(path)
+    except:
+        pass
 
 def mouse_down(event):
     global captured_part
